@@ -4,6 +4,7 @@ import json
 import uuid
 
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from .config import AppConfig
@@ -20,6 +21,13 @@ from .schemas import (
 from .tasks import run_prediction
 
 app = FastAPI(title='Pet Behavior Monitoring API', version='0.2.0')
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_methods=['GET', 'POST'],
+    allow_headers=['Content-Type'],
+)
 
 
 @app.on_event('startup')
