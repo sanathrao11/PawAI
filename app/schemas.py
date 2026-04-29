@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -23,3 +23,15 @@ class PredictionResponse(BaseModel):
     top_k: list[PredictionItem]
     window_size: int
     model_ready: bool
+
+
+class JobSubmitResponse(BaseModel):
+    job_id: str
+    status: str
+
+
+class JobStatusResponse(BaseModel):
+    job_id: str
+    status: str
+    result: Optional[PredictionResponse] = None
+    error: Optional[str] = None
