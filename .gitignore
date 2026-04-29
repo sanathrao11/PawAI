@@ -3,3 +3,12 @@ __pycache__/
 .venv/
 venv/
 .pytest_cache/
+*.db
+*.pt
+*.pth
+model_metadata.json
+.env
+.coverage
+htmlcov/
+dist/
+*.egg-info/
