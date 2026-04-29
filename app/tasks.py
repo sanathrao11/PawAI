@@ -1,13 +1,28 @@
 from __future__ import annotations
 
 import json
+import logging
+
+from celery.signals import worker_ready
 
 from .celery_app import celery
 from .config import AppConfig
 from .database import JobStatus, PredictionJob, SessionLocal
+from .model_status import check_model_status
 from .predictor import BehaviorPredictor
 
+logger = logging.getLogger(__name__)
+
 _predictor: BehaviorPredictor | None = None
+
+
+@worker_ready.connect
+def on_worker_ready(**kwargs) -> None:
+    status = check_model_status(AppConfig())
+    if status.ready:
+        logger.info('Model ready. checkpoint=%s', status.checkpoint_path)
+    else:
+        logger.warning('Model NOT ready: %s', status.error)
 
 
 def _get_predictor() -> BehaviorPredictor:

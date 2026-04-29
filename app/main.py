@@ -6,10 +6,13 @@ import uuid
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
+from .config import AppConfig
 from .database import JobStatus, PredictionJob, get_db, init_db
+from .model_status import check_model_status
 from .schemas import (
     JobStatusResponse,
     JobSubmitResponse,
+    ModelStatusResponse,
     PredictionItem,
     PredictionResponse,
     WindowPredictionRequest,
@@ -26,7 +29,24 @@ def startup() -> None:
 
 @app.get('/health')
 def health() -> dict[str, object]:
-    return {'status': 'ok'}
+    status = check_model_status(AppConfig())
+    return {'status': 'ok', 'model_ready': status.ready}
+
+
+@app.get('/model/status', response_model=ModelStatusResponse)
+def model_status() -> ModelStatusResponse:
+    status = check_model_status(AppConfig())
+    return ModelStatusResponse(
+        ready=status.ready,
+        checkpoint_exists=status.checkpoint_exists,
+        metadata_exists=status.metadata_exists,
+        checkpoint_path=status.checkpoint_path,
+        metadata_path=status.metadata_path,
+        metadata_valid=status.metadata_valid,
+        class_names=status.class_names,
+        window_size=status.window_size,
+        error=status.error,
+    )
 
 
 @app.post('/predict', response_model=JobSubmitResponse, status_code=202)
