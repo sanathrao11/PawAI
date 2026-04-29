@@ -35,3 +35,15 @@ class JobStatusResponse(BaseModel):
     status: str
     result: Optional[PredictionResponse] = None
     error: Optional[str] = None
+
+
+class ModelStatusResponse(BaseModel):
+    ready: bool
+    checkpoint_exists: bool
+    metadata_exists: bool
+    checkpoint_path: str
+    metadata_path: str
+    metadata_valid: bool
+    class_names: Optional[list[str]] = None
+    window_size: Optional[int] = None
+    error: Optional[str] = None
