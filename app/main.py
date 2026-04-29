@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from .config import AppConfig
-from .database import JobStatus, PredictionJob, get_db, init_db
+from .database import PredictionJob, get_db, init_db
 from .model_status import check_model_status
 from .schemas import (
     JobStatusResponse,

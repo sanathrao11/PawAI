@@ -4,8 +4,6 @@ import json
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
-
 
 def _make_config(tmp_path: Path, *, checkpoint: bool = False, metadata: bool = False, bad_json: bool = False):
     from app.config import AppConfig
