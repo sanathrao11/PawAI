@@ -12,3 +12,4 @@ model_metadata.json
 htmlcov/
 dist/
 *.egg-info/
+.claude/
