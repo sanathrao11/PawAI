@@ -85,7 +85,11 @@ jobs:
           REPO: ${{ secrets.ECR_REPO_FRONTEND }}
           SHA: ${{ github.sha }}
         run: |
-          docker build -t $REGISTRY/$REPO:$SHA -t $REGISTRY/$REPO:latest ./frontend
+          docker build \
+            --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
+            -t $REGISTRY/$REPO:$SHA \
+            -t $REGISTRY/$REPO:latest \
+            ./frontend
           docker push $REGISTRY/$REPO:$SHA
           docker push $REGISTRY/$REPO:latest
 
