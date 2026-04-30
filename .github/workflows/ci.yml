@@ -139,4 +139,5 @@ jobs:
         run: |
           aws ecs wait services-stable \
             --cluster ${{ secrets.ECS_CLUSTER }} \
-            --services ${{ secrets.ECS_SERVICE_API }}
+            --services ${{ secrets.ECS_SERVICE_API }} \
+            --cli-read-timeout 600
