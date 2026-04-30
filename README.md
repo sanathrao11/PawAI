@@ -6,23 +6,42 @@ A production-grade AI system that classifies pet behavior from IMU (acceleromete
 
 ## Architecture Overview
 
-```
-Browser (React)
-      |
-      | HTTP
-      v
-AWS ALB (Load Balancer)
-      |
-      v
-FastAPI (ECS Fargate)
-      |
-      |-- POST /predict --> Redis Queue --> Celery Worker (ECS Fargate)
-      |                                          |
-      |                                          |--> Load model from S3
-      |                                          |--> Run CNN+BiLSTM inference
-      |                                          |--> Save result to PostgreSQL
-      |
-      |-- GET /jobs/{id} --> PostgreSQL --> Return result
+> Full draw.io diagram: [docs/architecture.drawio](docs/architecture.drawio) — open at [app.diagrams.net](https://app.diagrams.net)
+
+```mermaid
+flowchart TD
+    User(["👤 User\n(Browser)"])
+
+    subgraph AWS["AWS — eu-north-1"]
+        ALB["🔀 Application Load Balancer\npawai-alb · Port 80"]
+
+        subgraph ECS["ECS Cluster — pawai-cluster (Fargate)"]
+            API["⚙️ pawai-api-service\nFastAPI · 0.5vCPU/1GB"]
+            WORKER["🤖 pawai-worker-service\nCelery · 1vCPU/2GB"]
+            FRONTEND["🌐 pawai-frontend-service\nReact + Nginx · 0.25vCPU/0.5GB"]
+        end
+
+        REDIS[("🔴 ElastiCache Redis 7\npawai-redis\ncache.t3.micro")]
+        RDS[("🗄️ RDS PostgreSQL 16\npawai · db.t3.micro")]
+        S3["📦 S3\npawai-bucket\nbest_model.pt\nmodel_metadata.json"]
+        ECR["📋 ECR\npawai-api\npawai-frontend"]
+    end
+
+    subgraph CICD["CI/CD — GitHub Actions"]
+        GH["🔧 lint → test → build\n→ push ECR → deploy ECS"]
+    end
+
+    User -->|"HTTP (direct IP)"| FRONTEND
+    User -->|"HTTP"| ALB
+    ALB -->|"Port 8000\n/health check"| API
+    API -->|"POST job"| RDS
+    API -->|"Enqueue task"| REDIS
+    REDIS -->|"Dequeue task"| WORKER
+    WORKER -->|"Download on startup"| S3
+    WORKER -->|"Write result"| RDS
+    API -->|"Poll result"| RDS
+    GH -->|"docker push"| ECR
+    GH -->|"force-new-deployment"| ECS
 ```
 
 ### Request Flow

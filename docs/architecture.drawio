@@ -1,0 +1,181 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="PawAI Architecture">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="100" value="PawAI — System Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="527" y="30" width="600" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Internet / User -->
+        <mxCell id="2" value="User&#xa;(Browser)" style="shape=mxgraph.aws4.user;fillColor=#232F3E;fontColor=#ffffff;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="790" y="100" width="60" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow: User to Internet -->
+        <mxCell id="200" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="2" target="3" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="201" value="HTTPS" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;" vertex="1" connectable="0" parent="200">
+          <mxGeometry relative="0.5" as="geometry"/>
+        </mxCell>
+
+        <!-- Route 53 / Internet Gateway -->
+        <mxCell id="3" value="Internet" style="shape=mxgraph.aws4.internet_gateway;fillColor=#8C4FFF;fontColor=#ffffff;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="790" y="230" width="60" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow: Internet to ALB -->
+        <mxCell id="202" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="3" target="4" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ALB -->
+        <mxCell id="4" value="AWS Application&#xa;Load Balancer&#xa;pawai-alb&#xa;Port 80" style="shape=mxgraph.aws4.application_load_balancer;fillColor=#8C4FFF;fontColor=#ffffff;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="790" y="360" width="60" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- VPC Box -->
+        <mxCell id="50" value="VPC — vpc-0baf8eca1c176c9e3 (eu-north-1)" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_vpc;strokeColor=#8C4FFF;fillColor=#F5F0FF;fontStyle=1;fontSize=12;fontColor=#8C4FFF;verticalAlign=top;align=center;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="200" y="460" width="1260" height="580" as="geometry"/>
+        </mxCell>
+
+        <!-- ECS Cluster Box -->
+        <mxCell id="51" value="ECS Cluster — pawai-cluster (AWS Fargate)" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_ecs;strokeColor=#ED7100;fillColor=#FFF8F2;fontStyle=1;fontSize=11;fontColor=#ED7100;verticalAlign=top;align=center;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="220" y="500" width="820" height="260" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow: ALB to API -->
+        <mxCell id="203" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="4" target="5" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="204" value="Target Group&#xa;Port 8000&#xa;/health check" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;" vertex="1" connectable="0" parent="203">
+          <mxGeometry relative="0.5" as="geometry"/>
+        </mxCell>
+
+        <!-- FastAPI Service -->
+        <mxCell id="5" value="ECS Fargate&#xa;pawai-api-service&#xa;FastAPI + Uvicorn&#xa;0.5 vCPU / 1GB&#xa;pawai-api:latest" style="shape=mxgraph.aws4.fargate;fillColor=#ED7100;fontColor=#ffffff;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="380" y="540" width="60" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Worker Service -->
+        <mxCell id="6" value="ECS Fargate&#xa;pawai-worker-service&#xa;Celery Worker&#xa;1 vCPU / 2GB&#xa;pawai-api:latest" style="shape=mxgraph.aws4.fargate;fillColor=#ED7100;fontColor=#ffffff;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="700" y="540" width="60" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Frontend Service -->
+        <mxCell id="7" value="ECS Fargate&#xa;pawai-frontend-service&#xa;React + Nginx&#xa;0.25 vCPU / 0.5GB&#xa;pawai-frontend:latest" style="shape=mxgraph.aws4.fargate;fillColor=#ED7100;fontColor=#ffffff;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="380" y="670" width="60" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow: API to Redis -->
+        <mxCell id="205" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;" edge="1" source="5" target="8" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="206" value="Enqueue task" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;" vertex="1" connectable="0" parent="205">
+          <mxGeometry relative="0.5" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow: Redis to Worker -->
+        <mxCell id="207" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;" edge="1" source="8" target="6" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="208" value="Dequeue task" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;" vertex="1" connectable="0" parent="207">
+          <mxGeometry relative="0.5" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow: API to RDS (write job) -->
+        <mxCell id="209" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="5" target="9" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="210" value="Write job record" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;" vertex="1" connectable="0" parent="209">
+          <mxGeometry relative="0.5" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow: Worker to RDS (write result) -->
+        <mxCell id="211" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="6" target="9" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="212" value="Write result" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;" vertex="1" connectable="0" parent="211">
+          <mxGeometry relative="0.5" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow: Worker to S3 -->
+        <mxCell id="213" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" source="6" target="10" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="214" value="Download model on startup" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;" vertex="1" connectable="0" parent="213">
+          <mxGeometry relative="0.5" as="geometry"/>
+        </mxCell>
+
+        <!-- ElastiCache Redis -->
+        <mxCell id="8" value="Amazon ElastiCache&#xa;Redis 7&#xa;pawai-redis&#xa;cache.t3.micro&#xa;Cluster mode: OFF" style="shape=mxgraph.aws4.elasticache;fillColor=#C7131F;fontColor=#ffffff;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="540" y="540" width="60" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- RDS PostgreSQL -->
+        <mxCell id="9" value="Amazon RDS&#xa;PostgreSQL 16&#xa;db.t3.micro&#xa;pawai (database)&#xa;Multi-AZ: No" style="shape=mxgraph.aws4.rds;fillColor=#C7131F;fontColor=#ffffff;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="380" y="870" width="60" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- S3 -->
+        <mxCell id="10" value="Amazon S3&#xa;pawai-bucket&#xa;best_model.pt&#xa;model_metadata.json" style="shape=mxgraph.aws4.s3;fillColor=#3F8624;fontColor=#ffffff;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="900" y="540" width="60" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- ECR -->
+        <mxCell id="11" value="Amazon ECR&#xa;pawai-api&#xa;pawai-frontend&#xa;(private)" style="shape=mxgraph.aws4.ecr;fillColor=#ED7100;fontColor=#ffffff;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="540" width="60" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- CloudWatch -->
+        <mxCell id="12" value="Amazon CloudWatch&#xa;/ecs/pawai-api&#xa;/ecs/pawai-worker&#xa;/ecs/pawai-frontend" style="shape=mxgraph.aws4.cloudwatch;fillColor=#E7157B;fontColor=#ffffff;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="700" width="60" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- GitHub Actions -->
+        <mxCell id="13" value="GitHub Actions&#xa;CI/CD Pipeline&#xa;test → build → push → deploy" style="shape=mxgraph.logos.github_copilot;fillColor=#24292F;fontColor=#ffffff;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1300" y="540" width="60" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow: GitHub to ECR -->
+        <mxCell id="215" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;strokeColor=#24292F;" edge="1" source="13" target="11" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="216" value="docker push" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;" vertex="1" connectable="0" parent="215">
+          <mxGeometry relative="0.5" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow: GitHub to ECS (deploy) -->
+        <mxCell id="217" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;strokeColor=#24292F;" edge="1" source="13" target="51" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="218" value="ecs update-service" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;" vertex="1" connectable="0" parent="217">
+          <mxGeometry relative="0.5" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow: User to Frontend -->
+        <mxCell id="219" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#0078D4;" edge="1" source="2" target="7" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="220" value="HTTP port 80&#xa;(direct IP)" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;" vertex="1" connectable="0" parent="219">
+          <mxGeometry relative="0.5" as="geometry"/>
+        </mxCell>
+
+        <!-- Security Group label -->
+        <mxCell id="52" value="Security Group: sg-019d0eabcca0489ea&#xa;Inbound: 80 (0.0.0.0/0), 8000 (0.0.0.0/0), 5432 (sg-self), 6379 (sg-self)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="220" y="990" width="600" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Flow legend -->
+        <mxCell id="53" value="Flow: User clicks 'Use Demo Data' → POST /predict → job_id returned → poll GET /jobs/{id} → result displayed" style="text;html=1;strokeColor=#0078D4;fillColor=#E6F3FF;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="200" y="1060" width="800" height="40" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
